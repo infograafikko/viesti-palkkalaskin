@@ -3,7 +3,14 @@ var smallerPCT;
 var drawCounter = 0;
 var t = 500;
 
+//Locale settings
+var myLocale = d3.formatLocale({
+  "decimal": ",",
+  "thousands": " ",//just put a space here
+  "grouping": [3]
+});
 
+var myFormat = myLocale.format(",")
 
 
 //Nouislider
@@ -254,7 +261,8 @@ var svg = d3.select("div#chart")
         svg.append("g")
           .attr("class", "xaxis")
           .attr("transform", "translate(0," + height + ")")
-          .call(d3.axisBottom(x));
+          .call(d3.axisBottom(x)
+            .tickFormat(function(d) { return myFormat(d);}));
 
         // Add the X Axis labels
         svg.append("text")
@@ -265,8 +273,10 @@ var svg = d3.select("div#chart")
 
         // Add the Y Axis
         svg.append("g")
-          .call(d3.axisLeft(y))
-          .attr("class", "yaxis")
+         .attr("class", "yaxis")
+          .call(d3.axisLeft(y)
+          .tickFormat(function(d) { return myFormat(d);}));
+
 
         // Add the Y Axis labels
         svg.append("text")
@@ -278,7 +288,6 @@ var svg = d3.select("div#chart")
         var toolTip = svg.append("g")
         .attr("class", "toolTip")
         .data([{x: 0, y: 0}]);
-        //.call(draggable);
         
         var draggable = d3.drag()
         .subject(function() {
@@ -356,7 +365,7 @@ var svg = d3.select("div#chart")
           //Count toolTipSlary when dragging
           var toolTipSalary = x.invert(d3.event.x + 60);
               toolTipSalary = Math.round(toolTipSalary/100)*100;
-          var toolTipSalaryText = toolTipSalary.toLocaleString() + " €";
+          var toolTipSalaryText = myFormat(toolTipSalary) + " €";
 
           var circlePct = graphData.find(y => y.salary === toolTipSalary).cumulativepct;
           var circlePctText;
@@ -575,7 +584,7 @@ var svg = d3.select("div#chart")
       var editSalarydetails = document.getElementById("salary-details");      
       var Salarydetails1 = e.options[e.selectedIndex].text;
       var Salarydetails2 = e2.options[e2.selectedIndex].text;
-      editSalarydetails.innerHTML = Salarydetails1 + " - " + Salarydetails2 + " (n = " + data.length + ")" + " <br /> Mediaani: " + d3.median(data, function(d) { return d.palkka; }).toLocaleString() + " €, pienin palkka: " + d3.min(data, function(d) { return d.palkka; }).toLocaleString() + " €, suurin palkka: " + d3.max(data, function(d) { return d.palkka; }).toLocaleString() + " €";
+      editSalarydetails.innerHTML = Salarydetails1 + " - " + Salarydetails2 + " (n = " + data.length + ")" + " <br /> Mediaani: " + myFormat(d3.median(data, function(d) { return d.palkka; })) + " €, pienin palkka: " + myFormat(d3.min(data, function(d) { return d.palkka; })) + " €, suurin palkka: " + myFormat(d3.max(data, function(d) { return d.palkka; })) + " €";
       editSalarydetails.style.display = "block";
 
 
